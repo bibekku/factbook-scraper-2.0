@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Vivek Maurya, Aviv Hadar",
-  "license": "ISC"
+  "author": "Vivek Maurya",
+  "license": "ISC",
+  "dependencies": {
+    "got": "^11.8.3"
+  }
 }
