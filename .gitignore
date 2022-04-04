@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+*.txt
+*.html
+*.json
+!package.json
+junk
