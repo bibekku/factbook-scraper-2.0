@@ -4,4 +4,4 @@ function toKebabCase(string) {
     return string.match(regex).join('-').toLowerCase();
 }
 
-modules.exports.toKebabCase = toKebabCase;
+module.exports.toKebabCase = toKebabCase;

@@ -1,7 +1,6 @@
 const { fileExists, read, write } = require('./file');
 const { fetchCountryDataPage } = require('./fetcher');
-
-const got = require('got');
+const { parseMainPage, parseCountry } = require('./parser');
 
 async function cacheAndReturn(data, uri) {
     await write(data, uri);
@@ -27,9 +26,14 @@ function main() {
 
     read('./cache/afghanistan.json')
         .then((data) => {
-            const parsed = JSON.parse(data);
-            console.log(parsed.result.data.country.json);
+            return parseMainPage(data);
         })
+        .then((data) => {
+            return parseCountry(data);
+        })
+        .then((data) => {
+            write(JSON.stringify(data), './cache/out.json')
+        });
 }
 
 main();
