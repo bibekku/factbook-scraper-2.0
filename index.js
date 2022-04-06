@@ -1,7 +1,7 @@
 const { fileExists, read, write } = require('./file');
 const { fetchCountryDataPage } = require('./fetcher');
 const { parseMainPage, parseCountry } = require('./parser');
-const { transmuteGeographicCoordinates } = require('./transmuter');
+const { transmuteGeographicCoordinates, transmuteArea } = require('./transmuter');
 
 async function cacheAndReturn(data, uri) {
     await write(data, uri);
@@ -46,6 +46,12 @@ function main() {
     console.log(transmuteGeographicCoordinates('10 00 N, 49 00 E'));
     console.log(transmuteGeographicCoordinates('60 00 S, 90 00 E (nominally), but the Southern Ocean has the unique distinction of being a '));
     console.log(transmuteGeographicCoordinates('54 30 S, 37 00 W'));
+
+    console.log();
+    console.log(transmuteArea('28,748 sq km'));
+    console.log(transmuteArea('2,381,740 sq km'));
+    console.log(transmuteArea('14.2 million sq km'));
+    console.log(transmuteArea('134.2 million sq km (note: this is temporary)'));
 
 }
 

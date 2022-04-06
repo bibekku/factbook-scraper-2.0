@@ -10,9 +10,9 @@ const { toKebabCase } = require('./formatter');
 
 
 function transmuteGeographicCoordinates(string) {
-    const coordinatesRegexp = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
+    const regex = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
     
-    const match = coordinatesRegexp.exec(string);
+    const match = regex.exec(string);
     
     return {
         latitude: {
@@ -28,5 +28,27 @@ function transmuteGeographicCoordinates(string) {
 
 }
 
+function transmuteArea(string) {
+    const regex = /^(?<value>[0-9,.]+) (?<units>[a-zA-Z.-\s]+)(\s+)?(\((?<note>.+)\))?/;
+    const match = regex.exec(string);
+
+    let value = parseFloat(match.groups.value.replaceAll(',', ''));
+    let units = match.groups.units;
+    
+    if (units.startsWith("million")) {
+        value = value * 1e6;
+        units = units.replace("million", "");
+        units = units.trim();
+    }
+
+    return {
+        value: Math.floor(value),
+        units: units,
+        ...(match.groups.note && {note : match.groups.note})
+    };
+
+}
+
 
 module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
+module.exports.transmuteArea = transmuteArea;
