@@ -1,7 +1,13 @@
 const { toKebabCase } = require('./formatter');
 
 function parseMainPage(jsonString) {
-    return JSON.parse(JSON.parse(jsonString).result.data.country.json);
+    return JSON.parse(
+        JSON.parse(jsonString)
+            .result
+            .data
+            .country
+            .json
+    );
 }
 
 function parseCountry(parsedJson) {

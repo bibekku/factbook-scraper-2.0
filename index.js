@@ -21,7 +21,10 @@ async function getCountryJson(countryName) {
 
 
 function main() {
-    getCountryJson('afghanistan')
+
+    const country = 'afghanistan';
+
+    getCountryJson(country)
         .then((data) => {});
 
     read('./cache/afghanistan.json')
@@ -29,10 +32,14 @@ function main() {
             return parseMainPage(data);
         })
         .then((data) => {
+            write(JSON.stringify(data), `./output/mid-${country}.json`)
+            return data;
+        })
+        .then((data) => {
             return parseCountry(data);
         })
         .then((data) => {
-            write(JSON.stringify(data), './cache/out.json')
+            write(JSON.stringify(data), `./output/out-${country}.json`)
         });
 }
 
