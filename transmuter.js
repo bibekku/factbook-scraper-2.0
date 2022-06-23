@@ -49,6 +49,24 @@ function transmuteArea(string) {
 
 }
 
+function transmuteBorders(string) {
+    const regex = /(?<neighbour>.+?) (?<value>[0-9][0-9,.]+) km(\s+)?(\((?<note>.+)\))?$/
+
+    return string.split('; ')
+                .map((neighbourInfo) => {
+                    const match = regex.exec(neighbourInfo);
+                    return {
+                        neighbour: match.groups.neighbour,
+                        'border-length': {
+                            value: match.groups.value,
+                            units: 'km'
+                        },
+                        ...(match.groups.note && {note : match.groups.note})
+                    }
+                });
+}
+
 
 module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
 module.exports.transmuteArea = transmuteArea;
+module.exports.transmuteBorders = transmuteBorders;

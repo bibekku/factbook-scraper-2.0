@@ -1,7 +1,7 @@
 const { fileExists, read, write } = require('./file');
 const { fetchCountryDataPage } = require('./fetcher');
 const { parseMainPage, parseCountry } = require('./parser');
-const { transmuteGeographicCoordinates, transmuteArea } = require('./transmuter');
+const { transmuteGeographicCoordinates, transmuteArea, transmuteBorders } = require('./transmuter');
 
 async function cacheAndReturn(data, uri) {
     await write(data, uri);
@@ -23,10 +23,10 @@ async function getCountryJson(countryName) {
 
 function main() {
 
-    // const country = 'afghanistan';
+    const country = 'afghanistan';
 
-    // getCountryJson(country)
-    //     .then((data) => {});
+    getCountryJson(country)
+        .then((data) => {});
 
     // read('./cache/afghanistan.json')
     //     .then((data) => {
@@ -52,6 +52,9 @@ function main() {
     console.log(transmuteArea('2,381,740 sq km'));
     console.log(transmuteArea('14.2 million sq km'));
     console.log(transmuteArea('134.2 million sq km (note: this is temporary)'));
+
+    console.log();
+    console.log(transmuteBorders('China 91 km; Iran 921 km; Pakistan 2,670 km; Tajikistan 1,357 km; Turkmenistan 804 km; Uzbekistan 144 km'));
 
 }
 
