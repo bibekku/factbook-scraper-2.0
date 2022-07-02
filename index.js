@@ -1,4 +1,4 @@
-const { fileExists, read, write } = require('./file');
+const { fileExists, read, write, stitchAllCountries } = require('./file');
 const { fetchCountryDataPage } = require('./fetcher');
 const { parseMainPage, parseCountry } = require('./parser');
 const { transmuteGeographicCoordinates, transmuteArea, transmuteBorders } = require('./transmuter');
@@ -50,9 +50,10 @@ async function loopWithSleep(countries) {
 }
 
 
-function main() {
+async function main() {
 
-    loopWithSleep(countries);
+    // loopWithSleep(countries);
+    console.log(stitchAllCountries());
 
     // for (const country of countries) {
     //     console.log(`${country.countryCode}: ${country.countryName}`)
