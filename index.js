@@ -16,11 +16,11 @@ async function cacheAndReturn(data, uri) {
 }
 
 
-async function getCountryJson(countryName) {
+async function getCountryJson(countryCode, countryName) {
     const uri = `./cache/${countryName}.json`;
 
     if (!fileExists(uri)) {
-        return fetchCountryDataPage(countryName)
+        return fetchCountryDataPage(countryCode)
                 .then((data) => cacheAndReturn(data, uri));
     } else {
         return read(uri);
@@ -35,7 +35,7 @@ async function loopWithSleep(countries) {
     for (let i = 0; i < countries.length; ++i) {
         country = countries[i];
         try {
-            response = await getCountryJson(country);
+            response = await getCountryJson(country.countryCode, country.countryName);
             await sleep(DEFAULT_SLEEP);
         } catch(error) {
             // If CIA website throttles, wait for errorTimeout
@@ -53,6 +53,10 @@ async function loopWithSleep(countries) {
 function main() {
 
     loopWithSleep(countries);
+
+    // for (const country of countries) {
+    //     console.log(`${country.countryCode}: ${country.countryName}`)
+    // }
 
     // read('./cache/afghanistan.json')
     //     .then((data) => {

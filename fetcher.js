@@ -1,9 +1,9 @@
 const got = require('got');
 
 //TODO: use /geos/ format 
-async function fetchCountryDataPage(countryName) {
-    const URL_FORMAT = `https://www.cia.gov/the-world-factbook/page-data/countries/${countryName}/page-data.json`
-    
+async function fetchCountryDataPage(countryCode) {
+    const URL_FORMAT = `https://www.cia.gov/the-world-factbook/geos/${countryCode}.json`;
+
     try {
         const { body } = await got(URL_FORMAT);
         return body;
