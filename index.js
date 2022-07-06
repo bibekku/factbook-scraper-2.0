@@ -59,7 +59,6 @@ async function main() {
     const afghanistan = require('./cache/afghanistan.json');
     // const intro = transmuteHtmlToPlain(afghanistan.categories[0].fields[0].value);
     const country = transmuteCountry(afghanistan);
-    console.log(country);
     await write(JSON.stringify(country, null, 2), './out.json');
 
     // for (const country of countries) {

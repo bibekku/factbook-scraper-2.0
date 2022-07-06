@@ -1,22 +1,21 @@
-const { transmuteHtmlToPlain } = require("../transmuter");
+const { transmuteHtmlToPlain, findFieldById } = require("../transmuter");
 
 const ID = "introduction";
 
-function introduction(introductionCategory) {    
+function introduction(category) {    
     return {
-        'background': background(introductionCategory)
+        'background': background(category)
     };
 }
 
-function background(introductionCategory) {
-    // field_id = 325
-    const backgroundField = introductionCategory.fields.find(field => field.field_id == 325);
+function background(category) {
+    const field = findFieldById(category, 325);
     
-    if (!backgroundField) {
+    if (!field) {
         return null;
     }
 
-    return transmuteHtmlToPlain(backgroundField.value);
+    return transmuteHtmlToPlain(field.value);
 }
 
 module.exports.introduction = introduction;
