@@ -16,6 +16,9 @@ function findFieldById(category, fieldId) {
     return category.fields.find(field => field.field_id == fieldId);
 }
 
+function findSubfieldByName(field, subfieldName) {
+    return field.subfields.find(subfield => subfield.name == subfieldName);
+}
 
 function transmuteGeographicCoordinates(string) {
     const regex = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
@@ -76,6 +79,7 @@ function transmuteBorders(string) {
 
 
 module.exports.findFieldById = findFieldById;
+module.exports.findSubfieldByName = findSubfieldByName;
 module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
 module.exports.transmuteArea = transmuteArea;
 module.exports.transmuteBorders = transmuteBorders;
