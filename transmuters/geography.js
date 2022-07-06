@@ -8,6 +8,7 @@ function geography(category) {
         'geographic_coordinates': geographic_coordinates(category),
         'map_references': map_references(category),
         'area': area(category),
+        'coastline': coastline(category),
     }
 }
 
@@ -80,5 +81,18 @@ function area_comparative(category) {
     return field.value;
 }
 
+//TODO: 281
+
+function coastline(category) {
+    const field = findFieldById(category, 282);
+
+    if (!field) return null;
+
+    return {
+        "value": parseInt(field.value),
+        "units": field.suffix,
+        ...field.subfield_note && { "note": field.subfield_note }
+    };
+}
 
 module.exports.geography = geography;
