@@ -8,6 +8,10 @@
 const cheerio = require('cheerio');
 const { toKebabCase } = require('./formatter');
 
+function transmuteHtmlToPlain(string) {
+    return cheerio.load(string).text();
+}
+
 
 function transmuteGeographicCoordinates(string) {
     const regex = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
@@ -70,3 +74,4 @@ function transmuteBorders(string) {
 module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
 module.exports.transmuteArea = transmuteArea;
 module.exports.transmuteBorders = transmuteBorders;
+module.exports.transmuteHtmlToPlain = transmuteHtmlToPlain;

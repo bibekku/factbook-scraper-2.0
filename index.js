@@ -1,8 +1,9 @@
 const { fileExists, read, write, stitchAllCountries } = require('./file');
 const { fetchCountryDataPage } = require('./fetcher');
 const { parseMainPage, parseCountry } = require('./parser');
-const { transmuteGeographicCoordinates, transmuteArea, transmuteBorders } = require('./transmuter');
+const { transmuteGeographicCoordinates, transmuteArea, transmuteBorders, transmuteHtmlToPlain } = require('./transmuter');
 const { countries } = require('./constants/countries');
+const { transmuteCountry } = require('./transmuters/country');
 
 const sleep = ms => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -53,7 +54,13 @@ async function loopWithSleep(countries) {
 async function main() {
 
     // loopWithSleep(countries);
-    console.log(stitchAllCountries());
+    // console.log(stitchAllCountries());
+
+    const afghanistan = require('./cache/afghanistan.json');
+    // const intro = transmuteHtmlToPlain(afghanistan.categories[0].fields[0].value);
+    const country = transmuteCountry(afghanistan);
+    console.log(country);
+    await write(JSON.stringify(country, null, 2), './out.json');
 
     // for (const country of countries) {
     //     console.log(`${country.countryCode}: ${country.countryName}`)
