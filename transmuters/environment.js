@@ -1,4 +1,4 @@
-const { findFieldById, transmuteHtmlToPlain, findSubfieldByName } = require("../transmuter");
+const { findFieldById, transmuteHtmlToPlain, findSubfieldByName, getNoteIfExists } = require("../transmuter");
 
 
 const ID = "environment";
@@ -15,6 +15,7 @@ function environment(category) {
         },
         'major_infectious_diseases': major_infectious_diseases(category),
         'food_insecurity': food_insecurity(category),
+        'waste_and_recycling': waste_and_recycling(category),
     };
 }
 
@@ -81,9 +82,7 @@ function air_pollutants(category) {
                 'date': sfMethane.info_date
             }
         },
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     };
 }
 
@@ -111,9 +110,7 @@ function urbanization(category) {
                 'date': sfRateOfUrbanization.subfield_note
             }
         },
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     };
 }
 
@@ -156,6 +153,8 @@ function major_infectious_diseases(category) {
 
     if (!field) return null;
 
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
     const sfDegreeOfRisk = findSubfieldByName(field, 'degree of risk');
     const sfFoodWaterborne = findSubfieldByName(field, 'food or waterborne diseases');
     const sfVectorborne = findSubfieldByName(field, 'vectorborne diseases');
@@ -186,9 +185,7 @@ function major_infectious_diseases(category) {
         ...sfAnimalContact && {
             'animal_contact_diseases': sfAnimalContact.value
         },
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     };
 }
 
@@ -211,8 +208,43 @@ function food_insecurity(category) {
 }
 
 
+function waste_and_recycling(category) {
+    const field = findFieldById(category, 422);
 
+    if (!field) return null;
 
+    const sfGenerated = findSubfieldByName(field, 'municipal solid waste generated annually');
+    const sfRecycled = findSubfieldByName(field, 'municipal solid waste recycled annually');
+    const sfRecycledPercentage = findSubfieldByName(field, 'percent of municipal solid waste recycled');
+
+    return {
+        ...sfGenerated && {
+            'municipal_solid_waste_generated_annually': {
+                'value': parseInt(sfGenerated.value),
+                'units': sfGenerated.suffix,
+                'estimated': sfGenerated.estimated,
+                'date': sfGenerated.info_date
+            }
+        },
+        ...sfRecycled && {
+            'municipal_solid_waste_recycled_annually': {
+                'value': parseInt(sfRecycled.value),
+                'units': sfRecycled.suffix,
+                'estimated': sfRecycled.estimated,
+                'date': sfRecycled.info_date
+            }
+        },
+        ...sfRecycledPercentage && {
+            'percent_of_municipal_solid_waste_recycled': {
+                'value': parseFloat(sfRecycledPercentage.value),
+                'units': sfRecycledPercentage.suffix,
+                'estimated': sfRecycledPercentage.estimated,
+                'date': sfRecycledPercentage.info_date
+            }
+        },
+        ...getNoteIfExists(field)
+    };
+}
 
 
 

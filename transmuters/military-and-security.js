@@ -1,4 +1,4 @@
-const { findFieldById, transmuteHtmlToPlain } = require("../transmuter");
+const { findFieldById, transmuteHtmlToPlain, getNoteIfExists } = require("../transmuter");
 
 
 const ID = "military_and_security";
@@ -23,9 +23,7 @@ function military_and_security_forces(category) {
     return {
         'forces': transmuteHtmlToPlain(field.value),
         'date': field.info_date,
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     }
 }
 
@@ -65,9 +63,7 @@ function personnel_strengths(category) {
     return {
         'strengths': transmuteHtmlToPlain(field.value),
         'date': field.info_date,
-        ...field.field_note && {
-            'note': field.field_note
-        }
+        ...getNoteIfExists(field)
     };
     
 }
@@ -81,9 +77,7 @@ function equipment_inventories_and_acquisitions(category) {
     return {
         'equipment_inventories_and_acquisitions': transmuteHtmlToPlain(field.value),
         'date': field.info_date,
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     }
 
 }
@@ -97,9 +91,7 @@ function service_age_and_obligation(category) {
     return {
         'service_age_and_obligation': transmuteHtmlToPlain(field.value),
         'date': field.info_date,
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     }
 }
 

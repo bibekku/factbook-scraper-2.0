@@ -24,6 +24,12 @@ function findSubfieldByName(field, subfieldName) {
     return field.subfields.find(subfield => subfield.name == subfieldName);
 }
 
+function getNoteIfExists(field) {
+    return field.field_note && {
+        'note': transmuteHtmlToPlain(field.field_note)
+    };
+}
+
 function transmuteGeographicCoordinates(string) {
     const regex = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
     
@@ -88,3 +94,4 @@ module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
 module.exports.transmuteArea = transmuteArea;
 module.exports.transmuteBorders = transmuteBorders;
 module.exports.transmuteHtmlToPlain = transmuteHtmlToPlain;
+module.exports.getNoteIfExists = getNoteIfExists;

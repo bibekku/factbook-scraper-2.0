@@ -1,4 +1,4 @@
-const { transmuteHtmlToPlain, findFieldById, transmuteGeographicCoordinates, findSubfieldByName } = require("../transmuter");
+const { transmuteHtmlToPlain, findFieldById, transmuteGeographicCoordinates, findSubfieldByName, getNoteIfExists } = require("../transmuter");
 
 const ID = "geography";
 
@@ -193,9 +193,7 @@ function land_use(category) {
                 }
             }   
         },
-        ...field.field_note && {
-            'note': transmuteHtmlToPlain(field.field_note)
-        }
+        ...getNoteIfExists(field)
     };
 }
 
