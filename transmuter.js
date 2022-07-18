@@ -30,6 +30,20 @@ function getNoteIfExists(field) {
     };
 }
 
+function transmuteValueUnitDateSubfield(subfield, keyName) {
+    return subfield && {
+        [keyName]: {
+            'value': parseFloat(subfield.value),
+            'units': subfield.suffix,
+            'estimated': subfield.estimated,
+            'date': subfield.info_date,
+            ...subfield.subfield_note && {
+                'note': subfield.subfield_note
+            }
+        }
+    };
+}
+
 function transmuteGeographicCoordinates(string) {
     const regex = /^(?<latDeg>[0-9]+) (?<latMin>[0-9]+) (?<latHem>[NS]), (?<longDeg>[0-9]+) (?<longMin>[0-9]+) (?<longHem>[EW]).*/;
     
@@ -95,3 +109,4 @@ module.exports.transmuteArea = transmuteArea;
 module.exports.transmuteBorders = transmuteBorders;
 module.exports.transmuteHtmlToPlain = transmuteHtmlToPlain;
 module.exports.getNoteIfExists = getNoteIfExists;
+module.exports.transmuteValueUnitDateSubfield = transmuteValueUnitDateSubfield;

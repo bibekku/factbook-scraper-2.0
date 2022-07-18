@@ -1,4 +1,4 @@
-const { findFieldById, transmuteHtmlToPlain, findSubfieldByName, getNoteIfExists } = require("../transmuter");
+const { findFieldById, transmuteHtmlToPlain, findSubfieldByName, getNoteIfExists, transmuteValueUnitDateSubfield } = require("../transmuter");
 
 
 const ID = "environment";
@@ -16,6 +16,7 @@ function environment(category) {
         'major_infectious_diseases': major_infectious_diseases(category),
         'food_insecurity': food_insecurity(category),
         'waste_and_recycling': waste_and_recycling(category),
+        'total_water_withdrawal': total_water_withdrawal(category),
     };
 }
 
@@ -218,36 +219,33 @@ function waste_and_recycling(category) {
     const sfRecycledPercentage = findSubfieldByName(field, 'percent of municipal solid waste recycled');
 
     return {
-        ...sfGenerated && {
-            'municipal_solid_waste_generated_annually': {
-                'value': parseInt(sfGenerated.value),
-                'units': sfGenerated.suffix,
-                'estimated': sfGenerated.estimated,
-                'date': sfGenerated.info_date
-            }
-        },
-        ...sfRecycled && {
-            'municipal_solid_waste_recycled_annually': {
-                'value': parseInt(sfRecycled.value),
-                'units': sfRecycled.suffix,
-                'estimated': sfRecycled.estimated,
-                'date': sfRecycled.info_date
-            }
-        },
-        ...sfRecycledPercentage && {
-            'percent_of_municipal_solid_waste_recycled': {
-                'value': parseFloat(sfRecycledPercentage.value),
-                'units': sfRecycledPercentage.suffix,
-                'estimated': sfRecycledPercentage.estimated,
-                'date': sfRecycledPercentage.info_date
-            }
-        },
+        ...transmuteValueUnitDateSubfield(sfGenerated, 'municipal_solid_waste_generated_annually'),
+        ...transmuteValueUnitDateSubfield(sfRecycled, 'municipal_solid_waste_recycled_annually'),
+        ...transmuteValueUnitDateSubfield(sfRecycledPercentage, 'percent_of_municipal_solid_waste_recycled'),
+
         ...getNoteIfExists(field)
     };
 }
 
 
+function total_water_withdrawal(category) {
+    const field = findFieldById(category, 417);
 
+    if (!field) return null;
+
+    const sfMunicipal = findSubfieldByName(field, 'municipal');
+    const sfIndustrial = findSubfieldByName(field, 'industrial');
+    const sfAgricultural = findSubfieldByName(field, 'agricultural');
+
+    return {
+        ...transmuteValueUnitDateSubfield(sfMunicipal, 'municipal'),
+        ...transmuteValueUnitDateSubfield(sfIndustrial, 'industrial'),
+        ...transmuteValueUnitDateSubfield(sfAgricultural, 'agricultural'),
+
+        ...getNoteIfExists(field)
+    };
+
+}
 
 
 
