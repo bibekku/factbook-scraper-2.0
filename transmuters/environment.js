@@ -9,6 +9,11 @@ function environment(category) {
         'international_agreements': international_agreements(category),
         'air_pollutants': air_pollutants(category),
         'urbanization': urbanization(category),
+        'revenue_from_natural_resources': {
+            'forest': revenue_from_forest_resources(category),
+            'coal': revenue_from_coal(category),
+        },
+        'major_infectious_diseases': major_infectious_diseases(category),
     };
 }
 
@@ -87,22 +92,22 @@ function urbanization(category) {
 
     if (!field) return null;
 
-    const sbUrbanPopulation = findSubfieldByName(field, 'urban population');
-    const sbRateOfUrbanization = findSubfieldByName(field, 'rate of urbanization');
+    const sfUrbanPopulation = findSubfieldByName(field, 'urban population');
+    const sfRateOfUrbanization = findSubfieldByName(field, 'rate of urbanization');
 
     return {
-        ...sbUrbanPopulation && {
+        ...sfUrbanPopulation && {
             'urban_population': {
-                'value': parseFloat(sbUrbanPopulation.value),
-                'units': sbUrbanPopulation.suffix,
-                'date': sbUrbanPopulation.subfield_note,
+                'value': parseFloat(sfUrbanPopulation.value),
+                'units': sfUrbanPopulation.suffix,
+                'date': sfUrbanPopulation.subfield_note,
             }
         },
-        ...sbRateOfUrbanization && {
+        ...sfRateOfUrbanization && {
             'rate_of_urbanization': {
-                'value': parseFloat(sbRateOfUrbanization.value),
-                'units': sbRateOfUrbanization.suffix,
-                'date': sbRateOfUrbanization.subfield_note
+                'value': parseFloat(sfRateOfUrbanization.value),
+                'units': sfRateOfUrbanization.suffix,
+                'date': sfRateOfUrbanization.subfield_note
             }
         },
         ...field.field_note && {
@@ -112,13 +117,79 @@ function urbanization(category) {
 }
 
 
+function revenue_from_forest_resources(category) {
+    const field = findFieldById(category, 420);
+
+    if (!field) return null;
+
+    const sfForestRevenues = findSubfieldByName(field, 'forest revenues');
+
+    return sfForestRevenues && {
+        'value': parseFloat(sfForestRevenues.value),
+        'units': 'percent_of_gdp',
+        'estimated': sfForestRevenues.estimated,
+        'date': sfForestRevenues.info_date
+    };
+}
 
 
+function revenue_from_coal(category) {
+    const field = findFieldById(category, 421);
+
+    if (!field) return null;
+
+    const sfCoalRevenues = findSubfieldByName(field, 'coal revenues');
+
+    return sfCoalRevenues && {
+        'value': parseFloat(sfCoalRevenues.value),
+        'units': 'percent_of_gdp',
+        'estimated': sfCoalRevenues.estimated,
+        'date': sfCoalRevenues.info_date
+    };
+}
 
 
+// TODO: move this to people and society
+function major_infectious_diseases(category) {
+    const field = findFieldById(category, 366);
 
+    if (!field) return null;
 
+    const sfDegreeOfRisk = findSubfieldByName(field, 'degree of risk');
+    const sfFoodWaterborne = findSubfieldByName(field, 'food or waterborne diseases');
+    const sfVectorborne = findSubfieldByName(field, 'vectorborne diseases');
+    const sfWaterContact = findSubfieldByName(field, 'water contact diseases');
+    const sfAerosolizedDust = findSubfieldByName(field, 'aerosolized dust or soil contact diseases');
+    const sfRespiratory = findSubfieldByName(field, 'respiratory diseases');
+    const sfAnimalContact = findSubfieldByName(field, 'animal contact diseases');
 
+    return {
+        ...sfDegreeOfRisk && {
+            'degree_of_risk': sfDegreeOfRisk.value
+        },
+        ...sfFoodWaterborne && {
+            'food_or_waterborne_diseases': sfFoodWaterborne.value
+        },
+        ...sfVectorborne && {
+            'vectorborne_diseases': sfVectorborne.value
+        },
+        ...sfWaterContact && {
+            'water_contact_diseases': sfWaterContact.value
+        },
+        ...sfAerosolizedDust && {
+            'aerosolized_dust_or_soil_contact_diseases': sfAerosolizedDust.value
+        },
+        ...sfRespiratory && {
+            'respiratory_diseases': sfRespiratory.value
+        },
+        ...sfAnimalContact && {
+            'animal_contact_diseases': sfAnimalContact.value
+        },
+        ...field.field_note && {
+            'note': transmuteHtmlToPlain(field.field_note)
+        }
+    };
+}
 
 
 
