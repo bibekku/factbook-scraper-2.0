@@ -30,6 +30,16 @@ function getNoteIfExists(field) {
     };
 }
 
+function transmuteValueUnitDateField(field) {
+    return {
+        'value': parseFloat(field.value),
+        'units': field.suffix,
+        'estimated': field.estimated,
+        'date': field.info_date,
+        ...getNoteIfExists(field)
+    }
+}
+
 function transmuteValueUnitDateSubfield(subfield, keyName) {
     return subfield && {
         [keyName]: {
@@ -110,3 +120,4 @@ module.exports.transmuteBorders = transmuteBorders;
 module.exports.transmuteHtmlToPlain = transmuteHtmlToPlain;
 module.exports.getNoteIfExists = getNoteIfExists;
 module.exports.transmuteValueUnitDateSubfield = transmuteValueUnitDateSubfield;
+module.exports.transmuteValueUnitDateField = transmuteValueUnitDateField;

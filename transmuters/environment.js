@@ -1,5 +1,4 @@
-const { findFieldById, transmuteHtmlToPlain, findSubfieldByName, getNoteIfExists, transmuteValueUnitDateSubfield } = require("../transmuter");
-
+const { findFieldById, transmuteHtmlToPlain, findSubfieldByName, getNoteIfExists, transmuteValueUnitDateSubfield, transmuteValueUnitDateField } = require("../transmuter");
 
 const ID = "environment";
 
@@ -17,6 +16,7 @@ function environment(category) {
         'food_insecurity': food_insecurity(category),
         'waste_and_recycling': waste_and_recycling(category),
         'total_water_withdrawal': total_water_withdrawal(category),
+        'total_renewable_water_resources': total_renewable_water_resources(category),
     };
 }
 
@@ -248,16 +248,12 @@ function total_water_withdrawal(category) {
 }
 
 
+function total_renewable_water_resources(category) {
+    const field = findFieldById(category, 290);
 
+    if (!field) return null;
 
-
-
-
-
-
-
-
-
-
+    return transmuteValueUnitDateField(field);
+}
 
 module.exports.environment = environment;
