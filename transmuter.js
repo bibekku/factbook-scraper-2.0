@@ -9,7 +9,11 @@ const cheerio = require('cheerio');
 const { toKebabCase } = require('./formatter');
 
 function transmuteHtmlToPlain(string) {
-    return cheerio.load(string).text();
+    const $ = cheerio.load(string);
+
+    $('br').replaceWith('\n');
+
+    return $.text();
 }
 
 function findFieldById(category, fieldId) {
