@@ -56,10 +56,10 @@ async function main() {
     // loopWithSleep(countries);
     // console.log(stitchAllCountries());
 
-    const countryName = "india";
+    const countryName = "australia";
 
     const country = transmuteCountry(require(`./cache/${countryName}.json`));
-    await write(JSON.stringify(country, null, 2), './out.json');
+    await write(JSON.stringify(country), './out.json');
 
     // for (const country of countries) {
     //     console.log(`${country.countryCode}: ${country.countryName}`)

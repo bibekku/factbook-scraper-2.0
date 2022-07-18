@@ -9,6 +9,8 @@ function geography(category) {
         'map_references': map_references(category),
         'area': area(category),
         'coastline': coastline(category),
+        'climate': climate(category),
+        'land_use': land_use(category)
     }
 }
 
@@ -117,6 +119,86 @@ function coastline(category) {
 //         }
 //     }
 // }
+
+
+function climate(category) {
+    const field = findFieldById(category, 284);
+
+    if (!field) return null;
+
+    return transmuteHtmlToPlain(field.value).split('; ');
+}
+
+
+function land_use(category) {
+    const field = findFieldById(category, 288);
+
+    if (!field) return null;
+
+    const sfAgriculturalLand = findSubfieldByName(field, 'agricultural land');
+    const sfArableLand = findSubfieldByName(field, 'agricultural land: arable land');
+    const sfPermanentCrops = findSubfieldByName(field, 'agricultural land: permanent crops');
+    const sfPermanentPasture = findSubfieldByName(field, 'agricultural land: permanent pasture');
+    const sfForest = findSubfieldByName(field, 'forest');
+    const sfOther = findSubfieldByName(field, 'other');
+
+    return {
+        'by_sector': {
+            ...sfAgriculturalLand && {
+                'agricultural_land_total': {
+                    'value': parseFloat(sfAgriculturalLand.value),
+                    'units': sfAgriculturalLand.suffix,
+                    'estimated': sfAgriculturalLand.estimated,
+                    'date': sfAgriculturalLand.info_date
+                }
+            },
+            ...sfArableLand && {
+                'arable_land': {
+                    'value': parseFloat(sfArableLand.value),
+                    'units': sfArableLand.suffix,
+                    'estimated': sfArableLand.estimated,
+                    'date': sfArableLand.info_date
+                }
+            },
+            ...sfPermanentCrops && {
+                'permanent_crops': {
+                    'value': parseFloat(sfPermanentCrops.value),
+                    'units': sfPermanentCrops.suffix,
+                    'estimated': sfPermanentCrops.estimated,
+                    'date': sfPermanentCrops.info_date
+                }
+            },
+            ...sfPermanentPasture && {  
+                'permanent_pasture': {
+                    'value': parseFloat(sfPermanentPasture.value),
+                    'units': sfPermanentPasture.suffix,
+                    'estimated': sfPermanentPasture.estimated,
+                    'date': sfPermanentPasture.info_date
+                }
+            },
+            ...sfForest && {
+                'forest': {
+                    'value': parseFloat(sfForest.value),
+                    'units': sfForest.suffix,
+                    'estimated': sfForest.estimated,
+                    'date': sfForest.info_date
+                }
+            },
+            ...sfOther && {
+                'other': {
+                    'value': parseFloat(sfOther.value),
+                    'units': sfOther.suffix,
+                    'estimated': sfOther.estimated,
+                    'date': sfOther.info_date
+                }
+            }   
+        },
+        ...field.field_note && {
+            'note': transmuteHtmlToPlain(field.field_note)
+        }
+    };
+}
+
 
 // TODO: rest of geography.
 
