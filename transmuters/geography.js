@@ -95,4 +95,29 @@ function coastline(category) {
     };
 }
 
+// TODO: 283
+
+// function maritime_claims(category) {
+//     const field = findFieldById(category, 283);
+
+//     if (!field) return null;
+
+//     if (field.value) return field.value;
+
+//     const territorialSeaSubfield = findSubfieldByName(field, "territorial sea");
+//     const contiguousZoneSubfield = findSubfieldByName(field, "contiguous zone");
+//     const exclusiveEconomicZoneSubfield = findSubfieldByName(field, "exclusive economic zone");
+//     const continentalShelfSubfield = findSubfieldByName(field, "continental shelf");
+//     const exclusiveFishingZoneSubfield = findSubfieldByName(field, "exclusive fishing zone");
+
+//     return {
+//         ...territorialSeaSubfield && {
+//             // field note
+//             // subfield note
+//         }
+//     }
+// }
+
+// TODO: rest of geography.
+
 module.exports.geography = geography;
