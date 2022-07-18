@@ -8,6 +8,9 @@ function military_and_security(category) {
         'military_and_security_forces': military_and_security_forces(category),
         'expenditures': expenditures(category),
         'personnel_strengths': personnel_strengths(category),
+        'equipment_inventories_and_acquisitions': equipment_inventories_and_acquisitions(category),
+        'service_age_and_obligation': service_age_and_obligation(category),
+        'note': military_note(category),
     }
 }
 
@@ -67,6 +70,46 @@ function personnel_strengths(category) {
         }
     };
     
+}
+
+
+function equipment_inventories_and_acquisitions(category) {
+    const field = findFieldById(category, 411);
+
+    if (!field) return null;
+
+    return {
+        'equipment_inventories_and_acquisitions': transmuteHtmlToPlain(field.value),
+        'date': field.info_date,
+        ...field.field_note && {
+            'note': transmuteHtmlToPlain(field.field_note)
+        }
+    }
+
+}
+
+
+function service_age_and_obligation(category) {
+    const field = findFieldById(category, 333);
+
+    if (!field) return null;
+
+    return {
+        'service_age_and_obligation': transmuteHtmlToPlain(field.value),
+        'date': field.info_date,
+        ...field.field_note && {
+            'note': transmuteHtmlToPlain(field.field_note)
+        }
+    }
+}
+
+
+function military_note(category) {
+    const field = findFieldById(category, 332);
+
+    if (!field) return null;
+
+    return transmuteHtmlToPlain(field.value);
 }
 
 
