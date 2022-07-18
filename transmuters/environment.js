@@ -14,6 +14,7 @@ function environment(category) {
             'coal': revenue_from_coal(category),
         },
         'major_infectious_diseases': major_infectious_diseases(category),
+        'food_insecurity': food_insecurity(category),
     };
 }
 
@@ -192,7 +193,22 @@ function major_infectious_diseases(category) {
 }
 
 
+function food_insecurity(category) {
+    const field = findFieldById(category, 418);
 
+    if (!field) return null;
+
+    // This field, whenever it exists, always contains EXACTLY one subfield
+    // https://www.cia.gov/the-world-factbook/field/food-insecurity/
+
+    const subfield = field.subfields[0];
+
+    return {
+        'severity': subfield.name,
+        'description': transmuteHtmlToPlain(subfield.value),
+        'date': subfield.info_date
+    };
+}
 
 
 
