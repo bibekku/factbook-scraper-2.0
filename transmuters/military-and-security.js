@@ -32,6 +32,7 @@ function expenditures(category) {
     const field = findFieldById(category, 330);
 
     if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
 
     return {
         'annual_values': field.subfields.map(subfield => expenditureForOneYear(subfield))

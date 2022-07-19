@@ -1,3 +1,4 @@
+const { communications } = require("./communications");
 const { energy } = require("./energy");
 const { environment } = require("./environment");
 const { geography } = require("./geography");
@@ -12,6 +13,7 @@ function transmuteCountry(country) {
             "geography": geography(country.categories[1]),
             "environment": environment(country.categories[3]),
             "energy": energy(country.categories[6]),
+            "communications": communications(country.categories[7]),
             "military_and_security": military_and_security(country.categories[9]),
         }
     };
