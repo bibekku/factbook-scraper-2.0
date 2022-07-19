@@ -56,7 +56,7 @@ async function main() {
     // loopWithSleep(countries);
     // console.log(stitchAllCountries());
 
-    const countryName = "australia";
+    const countryName = "afghanistan";
 
     const country = transmuteCountry(require(`./cache/${countryName}.json`));
     await write(JSON.stringify(country), './out.json');

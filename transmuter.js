@@ -33,7 +33,10 @@ function getNoteIfExists(field) {
 function transmuteValueUnitDateField(field) {
     return {
         'value': parseFloat(field.value),
-        'units': field.suffix,
+        // some values do not have units attached
+        ...field.suffix && {
+            'units': field.suffix,
+        },
         'estimated': field.estimated,
         'date': field.info_date,
         ...getNoteIfExists(field)
@@ -44,7 +47,10 @@ function transmuteValueUnitDateSubfield(subfield, keyName) {
     return subfield && {
         [keyName]: {
             'value': parseFloat(subfield.value),
-            'units': subfield.suffix,
+            // some values do not have units attached
+            ...subfield.suffix && {
+                'units': subfield.suffix,
+            },
             'estimated': subfield.estimated,
             'date': subfield.info_date,
             ...subfield.subfield_note && {
