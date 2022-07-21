@@ -49,6 +49,9 @@ function economy(category) {
             'commodities': imports_commodities(category),
             'partners': imports_partners(category),
         },
+        'reserves_of_foreign_exchange_and_gold': reserves_of_foreign_exchange_and_gold(category),
+        'external_debt': external_debt(category),
+        'exchange_rates': exchange_rates(category),
     };
 }
 
@@ -619,7 +622,57 @@ function imports_partners(category) {
 }
 
 
+function reserves_of_foreign_exchange_and_gold(category) {
+    const field = findFieldById(category, 245);
 
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+    
+    return {
+        'annual_values': field.subfields.map(subfield => subfieldForOneYear(subfield)),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function external_debt(category) {
+    const field = findFieldById(category, 246);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    const regex = /^Debt - external (?<capturedDate>.+)$/;
+
+    return {
+        'annual_values': field.subfields.map(subfield => {
+            const match = regex.exec(subfield.name);
+            return {
+                'value': parseFloat(subfield.value),
+                'units': 'USD',
+                'estimated': subfield.estimated,
+                'date': match.groups.capturedDate
+            }
+        })
+    };
+}
+
+
+function exchange_rates(category) {
+    const field = findFieldById(category, 249);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    const sfCurrency = findSubfieldByName(field, 'currency');
+
+    if (!sfCurrency) return transmuteHtmlToPlain(field.content);
+
+    return {
+        'annual_values': field.subfields.filter(subfield => subfield !== sfCurrency).map(subfield => subfieldForOneYear(subfield)),
+        'units': sfCurrency.value.replace(/\s\-$/, ''),
+        ...getNoteIfExists(field)
+    };
+}
 
 
 function subfieldForOneYear(subfieldForYear) {
