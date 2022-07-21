@@ -37,6 +37,18 @@ function economy(category) {
         'budget_surplus_or_deficit': budget_surplus_or_deficit(category),
         'public_debt': public_debt(category),
         'fiscal_year': fiscal_year(category),
+        'inflation_rate': inflation_rate(category),
+        'current_account_balance': current_account_balance(category),
+        'exports': {
+            'total_value': exports_total_value(category),
+            'commodities': exports_commodities(category),
+            'partners': exports_partners(category),
+        },
+        'imports': {
+            'total_value': imports_total_value(category),
+            'commodities': imports_commodities(category),
+            'partners': imports_partners(category),
+        },
     };
 }
 
@@ -479,6 +491,135 @@ function fiscal_year(category) {
 
     return transmuteHtmlToPlain(field.content);
 }
+
+
+function inflation_rate(category) {
+    const field = findFieldById(category, 229);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    return {
+        'annual_values': field.subfields.map(subfield => subfieldForOneYear(subfield)),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function current_account_balance(category) {
+    const field = findFieldById(category, 238);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    return {
+        'annual_values': field.subfields.map(subfield => subfieldForOneYear(subfield)),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function exports_total_value(category) {
+    const field = findFieldById(category, 239);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+    
+    return {
+        'annual_values': field.subfields.map(subfield => subfieldForOneYear(subfield)),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function exports_commodities(category) {
+    const field = findFieldById(category, 240);
+
+    if (!field) return null;
+
+    const splitRegex = /[,;] /;
+    
+    return {
+        'by_commodity': transmuteHtmlToPlain(field.value).split(splitRegex),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function exports_partners(category) {
+    const field = findFieldById(category, 241);
+
+    if (!field) return null;
+
+    const splitRegex = /[,;] /;
+    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>\d+)%$/
+
+    return {
+        'by_country': transmuteHtmlToPlain(field.value)
+                        .split(splitRegex)
+                        .map(singleCountryEntry => {
+                            const match = singleCountryRegex.exec(singleCountryEntry);
+                            return {
+                                'name': match.groups.countryName,
+                                'percent': parseFloat(match.groups.percentageShare)
+                            }
+                        }),
+        'date': field.info_date
+    };
+}
+
+
+function imports_total_value(category) {
+    const field = findFieldById(category, 242);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+    
+    return {
+        'annual_values': field.subfields.map(subfield => subfieldForOneYear(subfield)),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function imports_commodities(category) {
+    const field = findFieldById(category, 243);
+
+    if (!field) return null;
+
+    const splitRegex = /[,;] /;
+    
+    return {
+        'by_commodity': transmuteHtmlToPlain(field.value).split(splitRegex),
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function imports_partners(category) {
+    const field = findFieldById(category, 403);
+
+    if (!field) return null;
+
+    const splitRegex = /[,;] /;
+    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>\d+)%$/
+
+    return {
+        'by_country': transmuteHtmlToPlain(field.value)
+                        .split(splitRegex)
+                        .map(singleCountryEntry => {
+                            const match = singleCountryRegex.exec(singleCountryEntry);
+                            return {
+                                'name': match.groups.countryName,
+                                'percent': parseFloat(match.groups.percentageShare)
+                            }
+                        }),
+        'date': field.info_date
+    };
+}
+
+
+
 
 
 function subfieldForOneYear(subfieldForYear) {
