@@ -35,7 +35,8 @@ function expenditures(category) {
     if (!field.subfields) return transmuteHtmlToPlain(field.content);
 
     return {
-        'annual_values': field.subfields.map(subfield => expenditureForOneYear(subfield))
+        'annual_values': field.subfields.map(subfield => expenditureForOneYear(subfield)),
+        ...getNoteIfExists(field)
     };
 }
 
