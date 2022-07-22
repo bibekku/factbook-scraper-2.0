@@ -27,9 +27,21 @@ function people(category) {
         'contraceptive_prevalence_rate': contraceptive_prevalence_rate(category),
         'physicians_density': extractFieldAndTransmute(category, 359, 'physicians_per_1000_population'),
         'hospital_bed_density': extractFieldAndTransmute(category, 360, 'beds_per_1000_population'),
-        'current_health_expenditure': current_health_expenditure(category),
+        'current_health_expenditure': extractFieldAndTransmute(category, 409, 'percent_of_gdp'),
         'drinking_water_source': drinking_water_source(category),
         'sanitation_facility_access': sanitation_facility_access(category),
+        'hiv_aids': {
+            'adult_prevalence_rate': extractFieldAndTransmute(category, 363, 'percent_of_adults'),
+            'people_living_with_hiv_aids': extractFieldAndTransmute(category, 364, 'total'),
+            'deaths': extractFieldAndTransmute(category, 365, 'total'),
+        },
+        'major_infectious_diseases': major_infectious_diseases(category),
+        'adult_obesity': extractFieldAndTransmute(category, 367, 'percent_of_adults'),
+        'underweight_children': extractFieldAndTransmute(category, 368, 'percent_of_children_under_the_age_of_five'),
+        'education_expenditures': extractFieldAndTransmute(category, 369, 'percent_of_gdp'),
+        'literacy': literacy(category),
+        'school_life_expectancy': school_life_expectancy(category),
+        'youth_unemployment': youth_unemployment(category),
     };
 }
 
@@ -331,15 +343,6 @@ function contraceptive_prevalence_rate(category) {
 }
 
 
-function current_health_expenditure(category) {
-    const field = findFieldById(category, 409);
-
-    if (!field) return null;
-
-    return transmuteValueUnitDateField(field);
-}
-
-
 function drinking_water_source(category) {
     const field = findFieldById(category, 361);
 
@@ -479,5 +482,146 @@ function sanitation_facility_access(category) {
     };
 }
 
+
+function major_infectious_diseases(category) {
+    const field = findFieldById(category, 366);
+
+    if (!field) return null;
+
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    const sfDegreeOfRisk = findSubfieldByName(field, 'degree of risk');
+    const sfFoodWaterborne = findSubfieldByName(field, 'food or waterborne diseases');
+    const sfVectorborne = findSubfieldByName(field, 'vectorborne diseases');
+    const sfWaterContact = findSubfieldByName(field, 'water contact diseases');
+    const sfAerosolizedDust = findSubfieldByName(field, 'aerosolized dust or soil contact diseases');
+    const sfRespiratory = findSubfieldByName(field, 'respiratory diseases');
+    const sfAnimalContact = findSubfieldByName(field, 'animal contact diseases');
+
+    return {
+        ...sfDegreeOfRisk && {
+            'degree_of_risk': sfDegreeOfRisk.value
+        },
+        ...sfFoodWaterborne && {
+            'food_or_waterborne_diseases': sfFoodWaterborne.value
+        },
+        ...sfVectorborne && {
+            'vectorborne_diseases': sfVectorborne.value
+        },
+        ...sfWaterContact && {
+            'water_contact_diseases': sfWaterContact.value
+        },
+        ...sfAerosolizedDust && {
+            'aerosolized_dust_or_soil_contact_diseases': sfAerosolizedDust.value
+        },
+        ...sfRespiratory && {
+            'respiratory_diseases': sfRespiratory.value
+        },
+        ...sfAnimalContact && {
+            'animal_contact_diseases': sfAnimalContact.value
+        },
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function literacy(category) {
+    const field = findFieldById(category, 370);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sfDefinition = findSubfieldByName(field, 'definition');
+
+    const sections = Object.fromEntries(
+        field.subfields
+             .filter(subfield => subfield.name !== 'definition')
+             .map(subfield => {
+                const k = toSnakeCase(subfield.name);
+
+                if (!subfield.value) return [k, 'NA'];
+
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': subfield.suffix,
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        'definition': sfDefinition && sfDefinition.value,
+        ...sections,
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function school_life_expectancy(category) {
+    const field = findFieldById(category, 371);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sections = Object.fromEntries(
+        field.subfields
+             .map(subfield => {
+                const k = toSnakeCase(subfield.name);
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': subfield.suffix
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        ...sections,
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function youth_unemployment(category) {
+    const field = findFieldById(category, 373);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sections = Object.fromEntries(
+        field.subfields
+             .map(subfield => {
+                const k = toSnakeCase(subfield.name);
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': subfield.suffix
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        ...sections,
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
 
 module.exports.people = people;

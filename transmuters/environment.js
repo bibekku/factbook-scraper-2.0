@@ -11,7 +11,6 @@ function environment(category) {
             'forest': revenue_from_forest_resources(category),
             'coal': revenue_from_coal(category),
         },
-        'major_infectious_diseases': major_infectious_diseases(category),
         'food_insecurity': food_insecurity(category),
         'waste_and_recycling': waste_and_recycling(category),
         'total_water_withdrawal': total_water_withdrawal(category),
@@ -115,49 +114,6 @@ function revenue_from_coal(category) {
         'units': 'percent_of_gdp',
         'estimated': sfCoalRevenues.estimated,
         'date': sfCoalRevenues.info_date
-    };
-}
-
-
-// TODO: move this to people and society
-function major_infectious_diseases(category) {
-    const field = findFieldById(category, 366);
-
-    if (!field) return null;
-
-    if (!field.subfields) return transmuteHtmlToPlain(field.content);
-
-    const sfDegreeOfRisk = findSubfieldByName(field, 'degree of risk');
-    const sfFoodWaterborne = findSubfieldByName(field, 'food or waterborne diseases');
-    const sfVectorborne = findSubfieldByName(field, 'vectorborne diseases');
-    const sfWaterContact = findSubfieldByName(field, 'water contact diseases');
-    const sfAerosolizedDust = findSubfieldByName(field, 'aerosolized dust or soil contact diseases');
-    const sfRespiratory = findSubfieldByName(field, 'respiratory diseases');
-    const sfAnimalContact = findSubfieldByName(field, 'animal contact diseases');
-
-    return {
-        ...sfDegreeOfRisk && {
-            'degree_of_risk': sfDegreeOfRisk.value
-        },
-        ...sfFoodWaterborne && {
-            'food_or_waterborne_diseases': sfFoodWaterborne.value
-        },
-        ...sfVectorborne && {
-            'vectorborne_diseases': sfVectorborne.value
-        },
-        ...sfWaterContact && {
-            'water_contact_diseases': sfWaterContact.value
-        },
-        ...sfAerosolizedDust && {
-            'aerosolized_dust_or_soil_contact_diseases': sfAerosolizedDust.value
-        },
-        ...sfRespiratory && {
-            'respiratory_diseases': sfRespiratory.value
-        },
-        ...sfAnimalContact && {
-            'animal_contact_diseases': sfAnimalContact.value
-        },
-        ...getNoteIfExists(field)
     };
 }
 
