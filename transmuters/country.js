@@ -7,6 +7,7 @@ const { government } = require("./government");
 const { introduction } = require("./introduction");
 const { military_and_security } = require("./military-and-security");
 const { people } = require("./people-and-society");
+const { transportation } = require("./transportation");
 
 function transmuteCountry(country) {
     return {
@@ -20,6 +21,7 @@ function transmuteCountry(country) {
             "economy": economy(country.categories[5]),
             "energy": energy(country.categories[6]),
             "communications": communications(country.categories[7]),
+            "transportation": transportation(country.categories[8]),
             "military_and_security": military_and_security(country.categories[9]),
         }
     };
