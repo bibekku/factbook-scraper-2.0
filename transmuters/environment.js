@@ -7,7 +7,6 @@ function environment(category) {
         'current_issues': current_issues(category),
         'international_agreements': international_agreements(category),
         'air_pollutants': air_pollutants(category),
-        'urbanization': urbanization(category),
         'revenue_from_natural_resources': {
             'forest': revenue_from_forest_resources(category),
             'coal': revenue_from_coal(category),
@@ -81,34 +80,6 @@ function air_pollutants(category) {
                 'units': sfMethane.suffix,
                 'estimated': sfMethane.estimated,
                 'date': sfMethane.info_date
-            }
-        },
-        ...getNoteIfExists(field)
-    };
-}
-
-// TODO: move this to people and society
-function urbanization(category) {
-    const field = findFieldById(category, 349);
-
-    if (!field) return null;
-
-    const sfUrbanPopulation = findSubfieldByName(field, 'urban population');
-    const sfRateOfUrbanization = findSubfieldByName(field, 'rate of urbanization');
-
-    return {
-        ...sfUrbanPopulation && {
-            'urban_population': {
-                'value': parseFloat(sfUrbanPopulation.value),
-                'units': sfUrbanPopulation.suffix,
-                'date': sfUrbanPopulation.subfield_note,
-            }
-        },
-        ...sfRateOfUrbanization && {
-            'rate_of_urbanization': {
-                'value': parseFloat(sfRateOfUrbanization.value),
-                'units': sfRateOfUrbanization.suffix,
-                'date': sfRateOfUrbanization.subfield_note
             }
         },
         ...getNoteIfExists(field)

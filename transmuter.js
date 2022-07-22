@@ -24,6 +24,21 @@ function findSubfieldByName(field, subfieldName) {
     return field.subfields.find(subfield => subfield.name == subfieldName);
 }
 
+function extractFieldAndTransmute(category, fieldId, units) {
+    const field = findFieldById(category, fieldId);
+    
+    if (!field) return null;
+    if (!field.value) return transmuteHtmlToPlain(field.content);
+
+    return {
+        [units]: parseFloat(field.value),
+        'estimated': field.estimated,
+        'date': field.info_date,
+
+        ...getNoteIfExists(field)
+    };
+}
+
 function getNoteIfExists(field) {
     return field.field_note && {
         'note': transmuteHtmlToPlain(field.field_note)
@@ -127,3 +142,4 @@ module.exports.transmuteHtmlToPlain = transmuteHtmlToPlain;
 module.exports.getNoteIfExists = getNoteIfExists;
 module.exports.transmuteValueUnitDateSubfield = transmuteValueUnitDateSubfield;
 module.exports.transmuteValueUnitDateField = transmuteValueUnitDateField;
+module.exports.extractFieldAndTransmute = extractFieldAndTransmute;

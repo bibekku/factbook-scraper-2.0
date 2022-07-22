@@ -1,4 +1,4 @@
-const { findFieldById, findSubfieldByName, transmuteValueUnitDateSubfield, getNoteIfExists } = require("../transmuter");
+const { findFieldById, findSubfieldByName, transmuteValueUnitDateSubfield, getNoteIfExists, extractFieldAndTransmute } = require("../transmuter");
 
 
 const ID = "energy";
@@ -38,21 +38,6 @@ function energy(category) {
             'imports': extractFieldAndTransmute(category, 272, 'cubic_metres'),
             'proved_reserves': extractFieldAndTransmute(category, 273, 'cubic_metres'),
         }
-    };
-}
-
-
-function extractFieldAndTransmute(category, fieldId, units) {
-    const field = findFieldById(category, fieldId);
-    
-    if (!field) return null;
-
-    return {
-        [units]: parseFloat(field.value),
-        'estimated': field.estimated,
-        'date': field.info_date,
-
-        ...getNoteIfExists(field)
     };
 }
 
