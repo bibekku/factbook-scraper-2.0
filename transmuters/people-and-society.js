@@ -18,6 +18,18 @@ function people(category) {
         'net_migration_rate': extractFieldAndTransmute(category, 347, 'migrants_per_1000_population'),
         'population_distribution': population_distribution(category),
         'urbanization': urbanization(category),
+        'sex_ratio': sex_ratio(category),
+        'mothers_mean_age_at_first_birth': extractFieldAndTransmute(category, 352, 'age'),
+        'maternal_mortality_rate': extractFieldAndTransmute(category, 353, 'deaths_per_100k_live_births'),
+        'infant_mortality_rate': infant_mortality_rate(category),
+        'life_expectancy_at_birth': life_expectancy_at_birth(category),
+        'total_fertility_rate': extractFieldAndTransmute(category, 356, 'children_born_per_woman'),
+        'contraceptive_prevalence_rate': contraceptive_prevalence_rate(category),
+        'physicians_density': extractFieldAndTransmute(category, 359, 'physicians_per_1000_population'),
+        'hospital_bed_density': extractFieldAndTransmute(category, 360, 'beds_per_1000_population'),
+        'current_health_expenditure': current_health_expenditure(category),
+        'drinking_water_source': drinking_water_source(category),
+        'sanitation_facility_access': sanitation_facility_access(category),
     };
 }
 
@@ -71,9 +83,9 @@ function age_structure(category) {
     const sections = Object.fromEntries(
         field.subfields
              .map(subfield => {
-                const name = subfield.name;
-                name.replace('years', '');
-                name.replace('-', ' to ');
+                let name = subfield.name;
+                name = name.replace('years', '');
+                name = name.replace('-', ' to ');
 
                 const k = toSnakeCase(name);
 
@@ -194,6 +206,275 @@ function urbanization(category) {
                 'date': sfRateOfUrbanization.subfield_note
             }
         },
+        ...getNoteIfExists(field)
+    };
+}
+
+
+// TODO: major urban areas
+
+
+function sex_ratio(category) {
+    const field = findFieldById(category, 351);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sfTotalPopulation = findSubfieldByName(field, 'total population');
+
+    const byAge = Object.fromEntries(
+        field.subfields
+             .filter(subfield => subfield.name !== 'total population')
+             .map(subfield => {
+                let name = subfield.name;
+                name = name.replace('-', ' to ');
+                
+                const k = toSnakeCase(name);
+
+                if (!subfield.value) return [k, 'NA'];
+
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': subfield.suffix,
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        'by_age': byAge,
+        ...sfTotalPopulation && {
+            'total_population': {
+                'value': parseFloat(sfTotalPopulation.value),
+                'units': sfTotalPopulation.suffix
+            }
+        },
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function infant_mortality_rate(category) {
+    const field = findFieldById(category, 354);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sections = Object.fromEntries(
+        field.subfields
+             .map(subfield => {
+                const k = toSnakeCase(subfield.name);
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': 'deaths_per_1000_live_births'
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        ...sections,
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function life_expectancy_at_birth(category) {
+    const field = findFieldById(category, 355);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    // Ian's JSON presents only one date for the entire field
+    // Even though the dates may exist separately and independently
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    const sections = Object.fromEntries(
+        field.subfields
+             .map(subfield => {
+                const k = toSnakeCase(subfield.name);
+                const v = {
+                    'value': parseFloat(subfield.value),
+                    'units': subfield.suffix
+                };
+                return [k, v];
+             })
+    );
+
+    return {
+        ...sections,
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function contraceptive_prevalence_rate(category) {
+    const field = findFieldById(category, 357);
+
+    if (!field) return null;
+
+    return transmuteValueUnitDateField(field);
+}
+
+
+function current_health_expenditure(category) {
+    const field = findFieldById(category, 409);
+
+    if (!field) return null;
+
+    return transmuteValueUnitDateField(field);
+}
+
+
+function drinking_water_source(category) {
+    const field = findFieldById(category, 361);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    const sfUrbanImproved = findSubfieldByName(field, 'improved: urban');
+    const sfRuralImproved = findSubfieldByName(field, 'improved: rural');
+    const sfTotalImproved = findSubfieldByName(field, 'improved: total');
+
+    const sfUrbanUnimproved = findSubfieldByName(field, 'unimproved: urban');
+    const sfRuralUnimproved = findSubfieldByName(field, 'unimproved: rural');
+    const sfTotalUnimproved = findSubfieldByName(field, 'unimproved: total');
+
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    return {
+        'improved': {
+            ...sfUrbanImproved && {
+                'urban': {
+                    'value': parseFloat(sfUrbanImproved.value),
+                    'units': sfUrbanImproved.suffix,
+                    'subfield_note': sfUrbanImproved.subfield_note,
+                }
+            },
+            ...sfRuralImproved && {
+                'rural': {
+                    'value': parseFloat(sfRuralImproved.value),
+                    'units': sfRuralImproved.suffix,
+                    'subfield_note': sfRuralImproved.subfield_note,
+                }
+            },
+            ...sfTotalImproved && {
+                'total': {
+                    'value': parseFloat(sfTotalImproved.value),
+                    'units': sfTotalImproved.suffix,
+                    'subfield_note': sfTotalImproved.subfield_note,
+                }
+            },
+        },
+        'unimproved': {
+            ...sfUrbanUnimproved && {
+                'urban': {
+                    'value': parseFloat(sfUrbanUnimproved.value),
+                    'units': sfUrbanUnimproved.suffix,
+                    'subfield_note': sfUrbanUnimproved.subfield_note,
+                }
+            },
+            ...sfRuralUnimproved && {
+                'rural': {
+                    'value': parseFloat(sfRuralUnimproved.value),
+                    'units': sfRuralUnimproved.suffix,
+                    'subfield_note': sfRuralUnimproved.subfield_note,
+                }
+            },
+            ...sfTotalUnimproved && {
+                'total': {
+                    'value': parseFloat(sfTotalUnimproved.value),
+                    'units': sfTotalUnimproved.suffix,
+                    'subfield_note': sfTotalUnimproved.subfield_note,
+                }
+            },
+        },
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
+        ...getNoteIfExists(field)
+    };
+}
+
+
+function sanitation_facility_access(category) {
+    const field = findFieldById(category, 398);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
+
+    const sfUrbanImproved = findSubfieldByName(field, 'improved: urban');
+    const sfRuralImproved = findSubfieldByName(field, 'improved: rural');
+    const sfTotalImproved = findSubfieldByName(field, 'improved: total');
+
+    const sfUrbanUnimproved = findSubfieldByName(field, 'unimproved: urban');
+    const sfRuralUnimproved = findSubfieldByName(field, 'unimproved: rural');
+    const sfTotalUnimproved = findSubfieldByName(field, 'unimproved: total');
+
+    const datedSubfield = field.subfields.find(subfield => subfield.info_date);
+
+    return {
+        'improved': {
+            ...sfUrbanImproved && {
+                'urban': {
+                    'value': parseFloat(sfUrbanImproved.value),
+                    'units': sfUrbanImproved.suffix,
+                    'subfield_note': sfUrbanImproved.subfield_note,
+                }
+            },
+            ...sfRuralImproved && {
+                'rural': {
+                    'value': parseFloat(sfRuralImproved.value),
+                    'units': sfRuralImproved.suffix,
+                    'subfield_note': sfRuralImproved.subfield_note,
+                }
+            },
+            ...sfTotalImproved && {
+                'total': {
+                    'value': parseFloat(sfTotalImproved.value),
+                    'units': sfTotalImproved.suffix,
+                    'subfield_note': sfTotalImproved.subfield_note,
+                }
+            },
+        },
+        'unimproved': {
+            ...sfUrbanUnimproved && {
+                'urban': {
+                    'value': parseFloat(sfUrbanUnimproved.value),
+                    'units': sfUrbanUnimproved.suffix,
+                    'subfield_note': sfUrbanUnimproved.subfield_note,
+                }
+            },
+            ...sfRuralUnimproved && {
+                'rural': {
+                    'value': parseFloat(sfRuralUnimproved.value),
+                    'units': sfRuralUnimproved.suffix,
+                    'subfield_note': sfRuralUnimproved.subfield_note,
+                }
+            },
+            ...sfTotalUnimproved && {
+                'total': {
+                    'value': parseFloat(sfTotalUnimproved.value),
+                    'units': sfTotalUnimproved.suffix,
+                    'subfield_note': sfTotalUnimproved.subfield_note,
+                }
+            },
+        },
+        'estimated': datedSubfield && datedSubfield.estimated,
+        'date': datedSubfield && datedSubfield.info_date,
         ...getNoteIfExists(field)
     };
 }
