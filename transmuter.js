@@ -6,7 +6,6 @@
  */
 
 const cheerio = require('cheerio');
-const { toKebabCase } = require('./formatter');
 
 function transmuteHtmlToPlain(string) {
     const $ = cheerio.load(string);
@@ -16,12 +15,16 @@ function transmuteHtmlToPlain(string) {
     return $.text();
 }
 
+function findCategoryById(country, categoryId) {
+    return country.categories.find(category => category.id === categoryId);
+}
+
 function findFieldById(category, fieldId) {
-    return category.fields.find(field => field.field_id == fieldId);
+    return category.fields.find(field => field.field_id === fieldId);
 }
 
 function findSubfieldByName(field, subfieldName) {
-    return field.subfields.find(subfield => subfield.name == subfieldName);
+    return field.subfields.find(subfield => subfield.name === subfieldName);
 }
 
 function extractFieldAndTransmute(category, fieldId, units) {
@@ -132,7 +135,7 @@ function transmuteBorders(string) {
                 });
 }
 
-
+module.exports.findCategoryById = findCategoryById;
 module.exports.findFieldById = findFieldById;
 module.exports.findSubfieldByName = findSubfieldByName;
 module.exports.transmuteGeographicCoordinates = transmuteGeographicCoordinates;
