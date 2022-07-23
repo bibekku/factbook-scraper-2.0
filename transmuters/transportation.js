@@ -1,4 +1,4 @@
-const { toSnakeCase, removeCommasBetweenNumerals, splitNoParen } = require("../formatter");
+const { toSnakeCase, removeCommasBetweenNumerals, splitNoParenComma } = require("../formatter");
 const { findFieldById, transmuteHtmlToPlain, getNoteIfExists, extractFieldAndTransmute, findSubfieldByName } = require("../transmuter");
 
 const ID = 'transportation';
@@ -134,7 +134,7 @@ function pipelines(category) {
     const regex = /^(?<length>[\d\.]+)\s*(km)?\s*(?<type>[^\(\)]+)( \((?<note>.+)\))?$/;
 
     return {
-        'by_type': splitNoParen(cleanedString)
+        'by_type': splitNoParenComma(cleanedString)
                         .map(line => line.trim())
                         .filter(Boolean)
                         .map(line => {
