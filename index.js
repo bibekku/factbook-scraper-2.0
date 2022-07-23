@@ -58,12 +58,16 @@ async function main() {
 
     const countryName = "afghanistan";
 
-    const country = transmuteCountry(require(`./cache/${countryName}.json`));
-    await write(JSON.stringify(country), './out.json');
+    // const country = transmuteCountry(require(`./cache/${countryName}.json`));
+    // await write(JSON.stringify(country), './out.json');
 
-    // for (const country of countries) {
-    //     console.log(`${country.countryCode}: ${country.countryName}`)
-    // }
+    for (const country of countries) {
+        console.log(`Doing ${country.countryName}`);
+        const processedCountry = transmuteCountry(require(`./cache/${country.countryName}.json`));
+        await write(JSON.stringify(processedCountry), `./output/${country.countryName}.json`);
+    }
+
+    stitchAllCountries();
 
     // read('./cache/afghanistan.json')
     //     .then((data) => {

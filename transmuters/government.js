@@ -279,6 +279,7 @@ function international_organization_participation(category) {
     const regex = /^(?<org>.+?)( \((?<note>.+)\))?$/;
 
     return value.split(', ')
+                .filter(Boolean)
                 .map(orgString => {
                     const match = regex.exec(orgString);
                     return {

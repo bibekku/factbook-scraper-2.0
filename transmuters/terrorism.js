@@ -3,7 +3,7 @@ const { transmuteHtmlToPlain, findFieldById, getNoteIfExists } = require("../tra
 const ID = "terrorism";
 
 function terrorism(category) {    
-    return {
+    return category && {
         'terrorist_groups': terrorist_groups(category)
     };
 }

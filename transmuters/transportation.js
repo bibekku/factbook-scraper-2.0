@@ -139,6 +139,7 @@ function pipelines(category) {
                         .filter(Boolean)
                         .map(line => {
                             const match = regex.exec(line);
+                            if (!match) return line;
                             return {
                                 'type': match.groups?.type,
                                 'length': parseFloat(match.groups?.length),
@@ -276,6 +277,9 @@ function merchantShipsByType(string) {
 
 function ports_and_terminals(category) {
     const field = findFieldById(category, 388);
+
+    if (!field) return null;
+    if (!field.subfields) return transmuteHtmlToPlain(field.content);
 
     const sfMajorSeaports = findSubfieldByName(field, 'major seaport(s)');
     const sfOilTerminals = findSubfieldByName(field, 'oil terminal(s)');

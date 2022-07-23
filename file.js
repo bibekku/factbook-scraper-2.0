@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 
 const fsSync = require('fs');
 
-const dir = `./cache/`;
+const dir = `./output/`;
 const finalJsonFormat = {
     "countries": {
 
@@ -26,12 +26,14 @@ function stitchAllCountries() {
         return new Promise((resolve, reject) => {
             if (err) reject(err);
             files.forEach(file => {
+                if (!file.endsWith('json')) return;
                 let content = require(`${dir}${file}`);
-                finalJsonFormat["countries"][file] = content;
+                finalJsonFormat["countries"][file.split('.')[0]] = content;
             });
             resolve(finalJsonFormat);
         }).then(finalJsonFormat => {
-            fsSync.writeFileSync('./final.json', JSON.stringify(finalJsonFormat, null, 2));
+            // fsSync.writeFileSync('./final.json', JSON.stringify(finalJsonFormat, null, 2));
+            fsSync.writeFileSync('./final.json', JSON.stringify(finalJsonFormat));
         });
     });
 }

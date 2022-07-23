@@ -15,8 +15,8 @@ const { transportation } = require('./transportation');
 
 function transmuteCountry(country) {
     return {
-        'name': country.name,
         'data': {
+            'name': country.name,
             'introduction': introduction(findCategoryById(country, 'introduction')),
             'geography': geography(findCategoryById(country, 'geography')),
             'people': people(findCategoryById(country, 'people_and_society')),

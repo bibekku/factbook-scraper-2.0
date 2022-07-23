@@ -555,7 +555,7 @@ function exports_partners(category) {
     if (!field) return null;
 
     const splitRegex = /[,;] /;
-    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>\d+)%$/
+    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>[\d\.]+)%$/
 
     return {
         'by_country': transmuteHtmlToPlain(field.value)
@@ -605,7 +605,7 @@ function imports_partners(category) {
     if (!field) return null;
 
     const splitRegex = /[,;] /;
-    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>\d+)%$/
+    const singleCountryRegex = /^(?<countryName>.+)( )(?<percentageShare>[\d\.]+)%$/
 
     return {
         'by_country': transmuteHtmlToPlain(field.value)
